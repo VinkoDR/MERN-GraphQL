@@ -7,7 +7,7 @@ export default function Header() {
         <div className='container'>
             <a className='navbar-brand'href='/'></a>
             <div className='d-flex '>
-                <img src={logo} className="mr-2"/>
+                <img src={logo} className="mr-2" alt='logo'/>
                 <div>MERN-GraphQL</div>
             </div>
         </div>
