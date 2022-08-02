@@ -1,7 +1,7 @@
 const { projects, clients } = require("../sampleData.js")
-const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLSchema, GraphQLList, GraphQLNonNull } = require("graphql")
+const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLSchema, GraphQLList, GraphQLNonNull, GraphQLEnumType } = require("graphql")
 
-
+// problems avec les enums et status
 // Mongoose models:
 const Project = require("../models/Project")
 const Client = require("../models/Client")
@@ -32,7 +32,8 @@ const ProjectType = new GraphQLObjectType({
             type: ClientType,
             resolve(parent, args){
                 //clientId est une clé secondaire dans les datas de projects
-                return clients.find(client => client.id === parent.clientId)
+               // return Client.find(client => client.id === parent.clientId)
+               return Client.findById(parent.clientId);
             }}
     })
 
@@ -102,21 +103,101 @@ const mutation = new GraphQLObjectType({
                 })
                 return client.save()
             }
-        }
+        },
+        //delete a client
+        deleteClient: {
+            type: ClientType,
+            args: {
+                id: { type: GraphQLNonNull(GraphQLID)},
+            },
+            resolve(parents, args){
+                return Client.findByIdAndRemove(args.id)
+            }
+        },
+        //add a project
+        addProject: {
+            type: ProjectType,
+            args: {
+                name: { type: GraphQLNonNull(GraphQLString)},
+                description: { type: GraphQLNonNull(GraphQLString)},
+                status: { 
+                    type: new GraphQLEnumType({
+                    name: 'ProjectStatus',
+                    values: {
+                        new: {value : 'Not Started'},
+                        progress: {value : 'In Progress'},
+                        completed: {value : 'Completed'},
+                    }
+                }),
+                // defaultValue: 'Not Started',
+
+               
+            },
+                clientId: {type: GraphQLNonNull(GraphQLID)}
+            },
+            resolve(parents, args){
+                const project = new Project({
+                    name: args.name,
+                    description: args.description,
+                    status: args.status,
+                    clientId: args.clientId
+                })
+                return project.save()
+            }
+        },
+       // delete project
+       deleteProject: {
+            type: ProjectType,
+            args: {
+                    id: { type: GraphQLNonNull(GraphQLID)},
+                },
+                resolve(parents, args){
+                    return Project.findByIdAndRemove(args.id)
+            }
+            
+       },
+       //update a project
+       updateProject: {
+            type: ProjectType,
+            args: {
+                    id: { type: GraphQLNonNull(GraphQLID)},
+                    name: { type: GraphQLString},
+                    description: { type: GraphQLString},
+                    status:
+                    { 
+                        type: new GraphQLEnumType
+                        ({
+                        name: 'ProjectStatusUpdate',
+                        values: {
+                            new: {value : 'Not Started'},
+                            progress: {value : 'In Progress'},
+                            completed: {value : 'Completed'},
+                                },
+                        }),
+                      
+                    }, 
+                 },
+            resolve(parents, args){
+                return Project.findByIdAndUpdate(
+                    args.id,
+                    {
+                      $set: {
+                        name: args.name,
+                        description: args.description,
+                        status: args.status,
+                      },
+                    },
+                    { new: true }
+                  );
+                
+            }
+            
+       }
     }
 })
 
-//mutation example query on graphiql
-// mutation {
-//     addClient(name: "Vinko Roditi", email: "vinko.roditi@yahoo.fr", phone: "955-365-3376") {
-//       id
-//       name
-//       email
-//       phone
-//     }
-//   }
 
 module.exports = new GraphQLSchema({
     query: RootQuery,
     mutation,
-})
+}) 

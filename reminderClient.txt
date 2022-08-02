@@ -1,0 +1,8 @@
+
+create the client part in a folder named client:
+
+npx create-react-app client
+cd client
+npm i @apollo/client graphql react-router-dom react-icons
+
+we use the regular version of bootstrap with cdn in index.html
