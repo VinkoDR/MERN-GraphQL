@@ -9,7 +9,7 @@ const ProjectSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum:['Not started','In progress','Completed'],
+        enum:['Not Started','In Progress','Completed'],
     },
     // i want clientId to be an objectId but i want to the client model =>
     clientId: {

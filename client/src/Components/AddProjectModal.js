@@ -14,30 +14,30 @@ export default function AddProjectModal() {
     const [clientId, setClientId] = useState("")
     const [status, setStatus] = useState("new")
 
-    // get info from the query GET_CLIENTS
-  const { loading, error, data } = useQuery(GET_CLIENTS)
-
-  
-
+    
+    
+    
     const [addProject] = useMutation(ADD_PROJECT, {
         variables: {name, description, status, clientId},
         update(cache,{ data:{ addProject}}){
             const { projects } = cache.readQuery({ query: GET_PROJECTS });
-
+            
             cache.writeQuery({
-              query: GET_PROJECTS,
-              data: { projects: [...projects, addProject] },
+                query: GET_PROJECTS,
+                data: { projects: [...projects, addProject] },
             });
         }
     })
-
-    const onSubmit= (e) => {
+    // get info from the query GET_CLIENTS
+  const { loading, error, data } = useQuery(GET_CLIENTS)
+    
+    const onSubmit = (e) => {
         e.preventDefault()
         if (name === '' || description === '' ) {
             return alert('Please fill in all fields');
           }
-      
-           addProject(name, description, status, clientId);
+         console.log("submited")
+          addProject(name, description, status, clientId);
       
           setName('');
           setDescription('');
@@ -92,11 +92,11 @@ export default function AddProjectModal() {
                     </div>
                     <div className='mb-3'>
                         <label className='form-label'>Status</label>
-                        <select  id="status" value={status} onChange={(e) => setStatus(e.target.status)} 
+                        <select  id="status" value={status} onChange={(e) => setStatus(e.target.value)} 
                         className="form-select">
-                            {/* <option value="new">Not Started</option>
+                            <option value="new">Not Started</option>
                             <option value="progress">In Progress</option>
-                            <option value="completed">Completed</option> */}
+                            <option value="completed">Completed</option>
                         </select>
                     </div>
                     <div className='mb-3'>

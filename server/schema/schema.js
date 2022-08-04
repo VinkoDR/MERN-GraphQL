@@ -129,7 +129,7 @@ const mutation = new GraphQLObjectType({
                         completed: {value : 'Completed'},
                     }
                 }),
-                // defaultValue: 'Not Started',
+                //  defaultValue: 'Not Started',
 
                
             },
