@@ -111,6 +111,16 @@ const mutation = new GraphQLObjectType({
                 id: { type: GraphQLNonNull(GraphQLID)},
             },
             resolve(parents, args){
+                //Je cherche les projets qui ont un clientId egale a l'id du client
+                // que je veux supprimer
+                Project.find({clientId : args.id}).then(
+                    (projects) => {
+                        //je supprime chaque projets trouvé
+                        projects.forEach( project => {
+                            project.remove()
+                        })
+                    }
+                )
                 return Client.findByIdAndRemove(args.id)
             }
         },
